@@ -56,7 +56,6 @@ jobs:
             306093656765.dkr.ecr.ap-south-1.amazonaws.com/emlo4-session-08/aws-connect:latest \
             /bin/bash -c "
               cd /workspace && \
-              dvc remote modify --local myremote credentialpath credentials_1.json && \
               dvc pull -r myremote && \
               dvc repro train
             "
