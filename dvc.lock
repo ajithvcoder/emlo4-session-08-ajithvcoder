@@ -5,8 +5,8 @@ stages:
     deps:
     - path: configs/experiment/catdog_ex.yaml
       hash: md5
-      md5: d4d6d05101cb50b1a52d3e153fa6097c
-      size: 1242
+      md5: d9430d3b364df5d20fc94f90d8cc6ad1
+      size: 1280
     - path: data/cats_and_dogs_filtered
       hash: md5
       md5: c57d92307d2679437e80f6682cfaf521.dir

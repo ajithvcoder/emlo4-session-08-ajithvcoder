@@ -1,5 +1,18 @@
 ## EMLOV4-Session-07 Assignment - Experiment Tracking & Hyperparameter Optimization
 
+### Assignment -08 dev
+Do all these things manually first to understand the flow 
+- Connect vscode to ec2 instance - done
+- Create a ECR repo and try to push there from ec2 - done
+- try pulling the image and see - done
+- next check the image locally and do improvements in ec2 itself. - done
+- after you are sure it can run dvc repro command then push and test in ecr + github actions
+
+Do these manually
+- use s3 for storing datas - done
+- do pushing checkpoint to s3
+- then go with github actions
+
 ### Contents
 
 **Note: In addition to the requirements I have also done eval and infer pipeline to fetch optimized model checkpoint automatically**
