@@ -18,6 +18,9 @@ jobs:
           --cloud-region=ap-south-1 \
           --cloud-type=g4dn.xlarge \
           --cloud-hdd-size=64 \
+          --cloud-spot=True\
+          --single=True\
+          --reuse=True
           --labels=cml-gpu
   train-and-report:
     runs-on: [self-hosted, cml-gpu]
