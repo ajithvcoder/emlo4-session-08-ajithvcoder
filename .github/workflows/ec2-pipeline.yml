@@ -16,7 +16,6 @@ jobs:
           cml runner launch \
           --cloud=aws \
           --name=session-08 \
-          --no-retry \
           --cloud-region=ap-south-1 \
           --cloud-type=g4dn.xlarge \
           --cloud-hdd-size=64 \
