@@ -2,35 +2,35 @@ name: CML-EC2-Runner
 on: 
   workflow_dispatch:
 jobs:
-  # launch-runner:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: iterative/setup-cml@v1
-  #     - name: Deploy runner on AWS EC2
-  #       env:
-  #         REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-  #         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #       run: |
-  #         cml runner launch \
-  #         --cloud=aws \
-  #         --name=session-08 \
-  #         --cloud-region=ap-south-1 \
-  #         --cloud-type=g4dn.xlarge \
-  #         --cloud-hdd-size=64 \
-  #         --cloud-spot \
-  #         --single \
-  #         --labels=cml-gpu \
-  #         --idle-timeout=100 
-  train-and-report:
-    # runs-on: [self-hosted, cml-gpu]
-    # needs: launch-runner
-    # timeout-minutes: 20
-    # container:
-    #   image: docker://iterativeai/cml:0-dvc2-base1-gpu
-    #   options: --gpus all
+  launch-runner:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: iterative/setup-cml@v1
+      - name: Deploy runner on AWS EC2
+        env:
+          REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          cml runner launch \
+          --cloud=aws \
+          --name=session-08 \
+          --cloud-region=ap-south-1 \
+          --cloud-type=g4dn.xlarge \
+          --cloud-hdd-size=64 \
+          --cloud-spot \
+          --single \
+          --labels=cml-gpu \
+          --idle-timeout=100 
+  train-and-report:
+    runs-on: [self-hosted, cml-gpu]
+    needs: launch-runner
+    timeout-minutes: 20
+    container:
+      image: docker://iterativeai/cml:0-dvc2-base1-gpu
+      options: --gpus all
+    # runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -43,10 +43,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # - name: Install Docker
-      #   run: |
-      #     curl -fsSL https://get.docker.com -o get-docker.sh
-      #     sh get-docker.sh
+      - name: Install Docker
+        run: |
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sh get-docker.sh
 
 
       - name: Login to Amazon ECR
@@ -59,7 +59,7 @@ jobs:
 
       - name: Run DVC commands in container
         run: |
-          docker run --rm  \
+          docker run --rm --gpus all \
             -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
             -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
             -e AWS_DEFAULT_REGION=${{ secrets.AWS_REGION }} \
