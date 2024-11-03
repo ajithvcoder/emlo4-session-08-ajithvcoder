@@ -68,7 +68,7 @@ jobs:
             /bin/bash -c "
               ls -a /workspace && \
               dvc pull -r myremote && \
-              dvc repro
+              dvc repro -f
             ")
 
           # Wait a moment to ensure the container has started
