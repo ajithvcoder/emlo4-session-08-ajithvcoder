@@ -2,27 +2,27 @@ name: CML-EC2-Runner
 on: 
   workflow_dispatch:
 jobs:
-    launch-runner:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v3
-        - uses: iterative/setup-cml@v1
-        - name: Deploy runner on AWS EC2
-          env:
-            REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          run: |
-            cml runner launch \
-            --cloud=aws \
-            --name=session-08 \
-            --cloud-region=ap-south-1 \
-            --cloud-type=g4dn.xlarge \
-            --cloud-hdd-size=64 \
-            --cloud-spot \
-            --single \
-            --labels=cml-gpu \
-            --idle-timeout=100
+  launch-runner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: iterative/setup-cml@v1
+      - name: Deploy runner on AWS EC2
+        env:
+          REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          cml runner launch \
+          --cloud=aws \
+          --name=session-08 \
+          --cloud-region=ap-south-1 \
+          --cloud-type=g4dn.xlarge \
+          --cloud-hdd-size=64 \
+          --cloud-spot \
+          --single \
+          --labels=cml-gpu \
+          --idle-timeout=100 
   train-and-report:
     runs-on: [self-hosted, cml-gpu]
     needs: launch-runner
