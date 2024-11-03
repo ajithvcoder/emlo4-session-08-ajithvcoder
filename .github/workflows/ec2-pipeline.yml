@@ -59,17 +59,27 @@ jobs:
 
       - name: Run DVC commands in container
         run: |
-          docker run -d --gpus=all \
+          CONTAINER_ID=$(docker run -d --gpus=all \
             -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
             -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
             -e AWS_DEFAULT_REGION=${{ secrets.AWS_REGION }} \
             -v "$(pwd):/workspace" \
-            ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest \
+            ${{ secrets.AWS_ECR_LOGIN_URI }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest \
             /bin/bash -c "
-              ls -a /workspace
-            "
+              ls -a /workspace && \
+              dvc pull -r myremote
+            ")
+
+          # Wait a moment to ensure the container has started
+          sleep 5
+          
+          # Print logs from the container
+          docker logs $CONTAINER_ID
+
+          # Stop the container after retrieving logs
+          docker stop $CONTAINER_ID
 
       - name: Clean previous images and containers
         run: |
-         docker system prune -f
+          docker system prune -f
 
