@@ -56,7 +56,7 @@ jobs:
         run: |
           if command -v nvcc &> /dev/null; then
             echo "CUDA Version:"
-            nvcc --version
+            nvcc --version || true
           else
             echo "nvcc not found. Ensure CUDA is installed."
           fi
@@ -65,7 +65,7 @@ jobs:
         run: |
           if [ -f /usr/local/cuda/include/cudnn_version.h ]; then
             echo "cuDNN Version:"
-            cat /usr/local/cuda/include/cudnn_version.h | grep CUDNN_MAJOR -A 2
+            cat /usr/local/cuda/include/cudnn_version.h | grep CUDNN_MAJOR -A 2 || true
           else
             echo "cuDNN not found. Ensure cuDNN is installed."
           fi
