@@ -68,7 +68,27 @@ jobs:
           hostname
           whoami
           pwd
+          apt-get update
+          apt-get install awscli
 
+      - name: Set up AWS CLI credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1  # Change to your desired region
+        run: |
+          # Create the AWS config and credentials files
+          mkdir -p ~/.aws
+          echo "[default]" > ~/.aws/config
+          echo "region=${AWS_DEFAULT_REGION}" >> ~/.aws/config
+          echo "[default]" > ~/.aws/credentials
+          echo "aws_access_key_id=${AWS_ACCESS_KEY_ID}" >> ~/.aws/credentials
+          echo "aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/credentials
+
+      - name: Test AWS CLI
+        run: |
+          # Now you can run any AWS CLI command
+          aws s3 ls  # Example command to list S3 buckets
 
       # - name: Authenticate with AWS ECR
       #   uses: aws-actions/configure-aws-credentials@v4
@@ -77,9 +97,9 @@ jobs:
       #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       #     aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: AWS ECR
-        run: |
-          aws configure aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }} aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # - name: AWS ECR
+      #   run: |
+      #     aws configure aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }} aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
         
 
       # - name: Install Docker
