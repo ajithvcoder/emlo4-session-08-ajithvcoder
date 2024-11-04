@@ -194,10 +194,6 @@ jobs:
           checkpoint_file=$(head -n 1 ./model_storage/best_model_checkpoint.txt)
           echo "CHECKPOINT_FILE=$checkpoint_file" >> $GITHUB_ENV
 
-      - name: Get latest commit ID
-        id: get_commit_id
-        run: echo "COMMIT_ID=$(git rev-parse HEAD)" >> $GITHUB_ENV
-
       - name: Upload checkpoint to S3
         run: |
           checkpoint_path="${{ env.CHECKPOINT_FILE }}"  # Use the checkpoint path from the file
