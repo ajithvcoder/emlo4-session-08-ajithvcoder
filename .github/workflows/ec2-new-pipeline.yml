@@ -34,10 +34,6 @@ jobs:
               ec2_instance_tags: >                          # Required for IAM role resource permission scoping
                 [
                     {"Key": "Owner", "Value": "ajith1"},
-                    {"Key": "Name", "Value": "github-runner"},
-                    {"Key": "Environment", "Value": "ci"},
-                    {"Key": "Project", "Value": "github-actions"},
-                    {"Key": "ManagedBy", "Value": "github-actions"}
                 ]
 
     # Job that runs on the self-hosted runner 
