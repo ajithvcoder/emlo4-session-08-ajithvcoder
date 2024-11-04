@@ -27,8 +27,8 @@ jobs:
               ec2_ami_id: ami-06bf4022fa9e0886f
               ec2_root_disk_size_gb: "64"                 # Optional - (defaults to AMI settings)
               ec2_root_disk_ebs_class: "gp2"               # Optional - Only used with custom volume root size (defaults to gp2)
-              ec2_subnet_id: "vpc-0bee66831ea737000"
-              ec2_security_group_id: "sg-014c43a9f35f81b10"
+              ec2_subnet_id: "subnet-0bd682e0d0c12e92c"
+              ec2_security_group_id: sg-014c43a9f35f81b10
               ec2_instance_ttl: 10                          # Optional - (default is 60 minutes)
               ec2_spot_instance_strategy: SpotOnly    # Other options are: None, BestEffort, MaxPerformance 
               ec2_instance_tags: >                          # Required for IAM role resource permission scoping
