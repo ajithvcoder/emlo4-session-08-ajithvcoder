@@ -30,6 +30,7 @@ jobs:
     # runs-on: ubuntu-latest
     steps:
 
+      - uses: actions/checkout@v3
       - name: Verify EC2 Instance
         run: |
           echo "Checking instance information..."
@@ -49,9 +50,6 @@ jobs:
           whoami
           pwd
 
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
 
       - name: Authenticate with AWS ECR
         uses: aws-actions/configure-aws-credentials@v4
