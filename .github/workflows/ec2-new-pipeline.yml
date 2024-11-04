@@ -1,3 +1,7 @@
+name: New-CML-EC2-Runner
+on: 
+  workflow_dispatch:
+
 jobs:
     start-runner:
         timeout-minutes: 5                  # normally it only takes 1-2 minutes
