@@ -75,7 +75,7 @@ jobs:
           fi
           
           # Get ECR login command and execute it
-          $(aws ecr get-login --no-include-email --region $AWS_REGION)
+          $(aws ecr get-login --no-include-email --region ap-south-1)
           aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 306093656765.dkr.ecr.ap-south-1.amazonaws.com
 
       - name: Set up AWS CLI credentials
