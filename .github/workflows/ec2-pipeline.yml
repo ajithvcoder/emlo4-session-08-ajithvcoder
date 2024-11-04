@@ -70,27 +70,27 @@ jobs:
           pwd
 
 
-      - name: Authenticate with AWS ECR
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+      # - name: Authenticate with AWS ECR
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Nvidia check
+      - name: AWS ECR
         run: |
-          nvidia-smi
+          aws configure aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }} aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
         
 
-      - name: Install Docker
-        run: |
-          curl -fsSL https://get.docker.com -o get-docker.sh
-          sh get-docker.sh
+      # - name: Install Docker
+      #   run: |
+      #     curl -fsSL https://get.docker.com -o get-docker.sh
+      #     sh get-docker.sh
 
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+      # - name: Login to Amazon ECR
+      #   id: login-ecr
+      #   uses: aws-actions/amazon-ecr-login@v2
 
       - name: Pull Docker image from ECR
         run: |
