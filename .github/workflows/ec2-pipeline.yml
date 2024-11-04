@@ -35,7 +35,7 @@ jobs:
           apt-get remove npm
           curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
           chmod +x ~/.nvm/nvm.sh
-          source ~/.bashrc
+          ls -a ~
           nvm -v
           nvm install 20
           node -v
