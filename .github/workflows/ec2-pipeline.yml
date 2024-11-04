@@ -27,9 +27,9 @@ jobs:
     runs-on: [self-hosted, cml-gpu]
     needs: launch-runner
     timeout-minutes: 20
-    container:
-      image: docker://pytorch/pytorch:2.4.0-cuda12.4-cudnn9-runtime
-      options: --gpus all
+    # container:
+    #   image: docker://pytorch/pytorch:2.4.0-cuda12.4-cudnn9-runtime
+    #   options: --gpus all
     # runs-on: ubuntu-latest
     steps:
       # - name: Set node environment
@@ -138,13 +138,13 @@ jobs:
       # - name: Login to Amazon ECR
       #   id: login-ecr
       #   uses: aws-actions/amazon-ecr-login@v2
-      - name: CUDA Check
-        run: |
-          docker run --gpus all -it pytorch/pytorch:2.3.1-cuda11.8-cudnn8-runtime python3 -c "
-          import torch; 
-          print(f'CUDA Available: {torch.cuda.is_available()}'); 
-          if torch.cuda.is_available(): 
-              print(f'Device: {torch.cuda.get_device_name(0)}')"
+      # - name: CUDA Check
+      #   run: |
+      #     docker run --gpus all -it pytorch/pytorch:2.3.1-cuda11.8-cudnn8-runtime python3 -c "
+      #     import torch; 
+      #     print(f'CUDA Available: {torch.cuda.is_available()}'); 
+      #     if torch.cuda.is_available(): 
+      #         print(f'Device: {torch.cuda.get_device_name(0)}')"
 
       - name: Pull Docker image from ECR
         run: |
