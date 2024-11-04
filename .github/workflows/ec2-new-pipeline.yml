@@ -16,7 +16,7 @@ jobs:
             with:
               aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
               aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-              # aws_iam_role_arn: "arn:aws:iam::REDACTED:role/REDACTED"
+              aws_iam_role_arn: "arn:aws:iam::306093656765:user/ajith1"
               aws_region: "ap-south-1"
               github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
               github_action_runner_version: v2.300.2                  # Optional (default is latest release)
@@ -33,7 +33,11 @@ jobs:
               ec2_spot_instance_strategy: SpotOnly    # Other options are: None, BestEffort, MaxPerformance 
               ec2_instance_tags: >                          # Required for IAM role resource permission scoping
                 [
-                  {"Key": "Owner", "Value": "deploybot"}
+                    {"Key": "Owner", "Value": "deploybot"},
+                    {"Key": "Name", "Value": "github-runner"},
+                    {"Key": "Environment", "Value": "ci"},
+                    {"Key": "Project", "Value": "github-actions"},
+                    {"Key": "ManagedBy", "Value": "github-actions"}
                 ]
 
     # Job that runs on the self-hosted runner 
