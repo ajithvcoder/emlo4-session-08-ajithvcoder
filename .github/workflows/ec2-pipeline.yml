@@ -61,8 +61,8 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Nvidia check
-          run: |
-            nvidia-smi
+        run: |
+          nvidia-smi
         
 
       - name: Install Docker
