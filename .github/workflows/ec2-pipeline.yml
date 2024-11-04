@@ -42,6 +42,7 @@ jobs:
 
   launch-runner:
     runs-on: ubuntu-latest
+    needs: build-and-push-ecr-image
     steps:
       - uses: actions/checkout@v3
       - uses: iterative/setup-cml@v2
