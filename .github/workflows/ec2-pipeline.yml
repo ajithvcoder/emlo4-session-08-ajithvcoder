@@ -185,7 +185,7 @@ jobs:
           bucket_name="mybucket-emlo-mumbai/session-08-checkpoint/"  # Change to your S3 bucket name
           s3_key="session-08-checkpoint/${{ env.COMMIT_ID }}/$(basename "$checkpoint_path")"  # Define S3 key
           echo "Uploading $checkpoint_path to s3://$bucket_name/$s3_key"
-          aws s3 cp "$checkpoint_path" "s3://$bucket_name/$s3_key"
+          aws s3 cp "$checkpoint_path" "s3://$bucket_name/$s3_key" --recursive
 
       - name: Clean previous images and containers
         run: |
