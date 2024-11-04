@@ -173,6 +173,11 @@ jobs:
         run: |
           ls -l ./  
 
+      - name: Install jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
       - name: Get latest commit ID from the repository
         id: get_commit_id
         env:
