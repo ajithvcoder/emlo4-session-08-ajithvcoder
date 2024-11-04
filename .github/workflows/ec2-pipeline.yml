@@ -146,7 +146,7 @@ jobs:
       - name: Run DVC commands in container
         run: |
           mkdir -p model_storage
-          docker run --rm --gpus=all \
+          docker run --gpus=all \
             -v model_storage:/workspace/model_storage \
             -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
             -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
