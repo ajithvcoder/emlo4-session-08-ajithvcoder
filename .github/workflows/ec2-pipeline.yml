@@ -68,8 +68,15 @@ jobs:
           hostname
           whoami
           pwd
-          apt-get update
-          apt-get install awscli
+        # Install the AWS CLI if not already available
+          if ! command -v aws &> /dev/null; then
+            apt-get update
+            apt-get install -y awscli
+          fi
+          
+          # Get ECR login command and execute it
+          $(aws ecr get-login --no-include-email --region $AWS_REGION)
+          aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 306093656765.dkr.ecr.ap-south-1.amazonaws.com
 
       - name: Set up AWS CLI credentials
         env:
