@@ -4,7 +4,7 @@ on:
 jobs:
 
   build-and-push-ecr-image:
-    name: Continuous Delivery
+    name: Build and push ECR image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -241,7 +241,7 @@ jobs:
       - name: Upload checkpoint to S3
         run: |
           checkpoint_path="${{ env.CHECKPOINT_FILE }}"  # Use the checkpoint path from the file
-          bucket_name="mybucket-emlo-mumbai/session-08-checkpoint/"  # Change to your S3 bucket name
+          bucket_name="mybucket-emlo-mumbai"  # Change to your S3 bucket name
           s3_key="session-08-checkpoint/${{ env.COMMIT_ID }}/$(basename "$checkpoint_path")"  # Define S3 key
           echo "Uploading $checkpoint_path to s3://$bucket_name/$s3_key"
           aws s3 cp "$checkpoint_path" "s3://$bucket_name/$s3_key"
