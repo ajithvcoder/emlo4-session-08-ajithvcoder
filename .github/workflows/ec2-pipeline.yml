@@ -25,6 +25,16 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Get latest commit ID
+        id: get_commit_id
+        run: |
+          latest_commit=$(git rev-parse HEAD)
+          echo "COMMIT_ID=$latest_commit" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Display the commit ID
+        run: echo "Latest commit ID is: ${{ env.COMMIT_ID }}"
+
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
@@ -217,16 +227,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y jq
 
-      - name: Get latest commit ID from the repository
-        id: get_commit_id
-        env:
-          REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        run: |
-          repo="ajithvcoder/emlo4-session-08-ajithvcoder"
-          latest_commit=$(curl -s -H "Authorization: token $REPO_TOKEN" \
-            "https://api.github.com/repos/$repo/commits?per_page=1" | \
-            jq -r '.[0].sha')
-          echo "COMMIT_ID=$latest_commit" >> $GITHUB_ENV
+      #   # Note: this is not proper method to fetch commid id, we need to fetch using github actions
+      # - name: Get latest commit ID from the repository
+      #   id: get_commit_id
+      #   env:
+      #     REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      #   run: |
+      #     repo="ajithvcoder/emlo4-session-08-ajithvcoder"
+      #     latest_commit=$(curl -s -H "Authorization: token $REPO_TOKEN" \
+      #       "https://api.github.com/repos/$repo/commits?per_page=1" | \
+      #       jq -r '.[0].sha')
+      #     echo "COMMIT_ID=$latest_commit" >> $GITHUB_ENV
 
       - name: List files in folder
         run: |
