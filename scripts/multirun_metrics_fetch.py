@@ -62,7 +62,7 @@ def get_hyperparams(log_dir, timestamp):
                                     "patch_size": values.get('patch_size'), "embed_dim": values.get('embed_dim')}
     return extract_hyperparams
 
-def main():
+def main_run():
     log_dir = 'logs'
     timestamp = get_latest_timestamp(os.path.join(log_dir, 'train/multiruns'))
     
@@ -177,5 +177,39 @@ def main():
     with open('best_model_checkpoint.txt', 'w') as f:
         f.write(f"./model_storage/epoch-checkpoint_patch_size-{hparams_data['best_params']['model.patch_size']}_embed_dim-{hparams_data['best_params']['model.embed_dim']}.ckpt")
 
+    import shutil
+
+    # Define the source file and destination folder
+    source_file = 'best_model_checkpoint.txt'
+    destination_folder = 'model_storage/'
+
+    # Copy the file to the destination folder
+    shutil.copy(source_file, destination_folder)
+
+    print(f"{source_file} has been copied to {destination_folder}")
+
+
+    # Define the path to the checkpoint file and folder containing .ckpt files
+    checkpoint_file = 'best_model_checkpoint.txt'
+    checkpoint_folder = 'model_storage'
+
+    # Read the first line of the checkpoint file to get the file to keep
+    with open(checkpoint_file, 'r') as f:
+        keep_file = f.readline().strip()
+
+    # Get the full path of the file to keep
+    keep_file_path = os.path.join(checkpoint_folder, os.path.basename(keep_file))
+
+    # Iterate over files in the checkpoint folder and delete unwanted .ckpt files
+    for file in os.listdir(checkpoint_folder):
+        file_path = os.path.join(checkpoint_folder, file)
+        if file_path.endswith('.ckpt') and file_path != keep_file_path:
+            os.remove(file_path)
+            print(f"Removed: {file_path}")
+
+    print(f"Kept: {keep_file_path}")
+
+
+
 if __name__ == "__main__":
-    main()
+    main_run()

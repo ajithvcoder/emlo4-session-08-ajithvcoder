@@ -5,8 +5,8 @@ stages:
     deps:
     - path: configs/experiment/catdog_ex.yaml
       hash: md5
-      md5: d9430d3b364df5d20fc94f90d8cc6ad1
-      size: 1280
+      md5: 959c64c29a91c7f7b4448e0c5cbc54f1
+      size: 1215
     - path: data/cats_and_dogs_filtered
       hash: md5
       md5: c57d92307d2679437e80f6682cfaf521.dir
@@ -23,8 +23,8 @@ stages:
     deps:
     - path: configs/experiment/catdog_ex.yaml
       hash: md5
-      md5: 912d97cb77912129ba1ae8427cddc766
-      size: 1240
+      md5: 959c64c29a91c7f7b4448e0c5cbc54f1
+      size: 1215
     - path: src/eval.py
       hash: md5
       md5: 47a9e50a0213ee71ff67a97b71d1ca6e
@@ -34,8 +34,8 @@ stages:
     deps:
     - path: configs/experiment/catdog_ex.yaml
       hash: md5
-      md5: 912d97cb77912129ba1ae8427cddc766
-      size: 1240
+      md5: 959c64c29a91c7f7b4448e0c5cbc54f1
+      size: 1215
     - path: src/infer.py
       hash: md5
       md5: 1b360e17f7740c9bd6eba9c52e0dc5d2
