@@ -33,7 +33,7 @@ jobs:
               ec2_spot_instance_strategy: SpotOnly    # Other options are: None, BestEffort, MaxPerformance 
               ec2_instance_tags: >                          # Required for IAM role resource permission scoping
                 [
-                    {"Key": "Owner", "Value": "ajith1"},
+                    {"Key": "Owner", "Value": "ajith1"}
                 ]
 
     # Job that runs on the self-hosted runner 
