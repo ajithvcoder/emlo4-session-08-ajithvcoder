@@ -29,21 +29,20 @@ jobs:
     timeout-minutes: 20
     # runs-on: ubuntu-latest
     steps:
-      - name: Set node environment
-        run: |
-          apt-get remove nodejs
-          apt-get remove npm
-          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-          chmod +x ~/.nvm/nvm.sh
-          ls -a ~
-          nvm -v
-          nvm install 20
-          node -v
-          npm -v
+      # - name: Set node environment
+      #   run: |
+      #     apt-get remove nodejs
+      #     apt-get remove npm
+      #     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+      #     chmod +x ~/.nvm/nvm.sh
+      #     ls -a ~
+      #     nvm -v
+      #     nvm install 20
+      #     node -v
+      #     npm -v
+      - name: Checkout code
+      - uses: actions/checkout@v2
 
-      - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Verify EC2 Instance
         run: |
