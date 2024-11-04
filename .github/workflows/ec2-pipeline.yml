@@ -27,11 +27,28 @@ jobs:
     runs-on: [self-hosted, cml-gpu]
     needs: launch-runner
     timeout-minutes: 20
-    container:
-      image: docker://iterativeai/cml:0-dvc2-base1-gpu
-      options: --gpus all
     # runs-on: ubuntu-latest
     steps:
+
+      - name: Verify EC2 Instance
+        run: |
+          echo "Checking instance information..."
+          # Check if we're on EC2
+          TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+          curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-type
+          
+          echo "Checking system resources..."
+          lscpu
+          free -h
+          df -h
+          nvidia-smi  # This will show GPU if available
+          
+          echo "Checking environment..."
+          env | grep AWS || true
+          hostname
+          whoami
+          pwd
+
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
@@ -42,6 +59,11 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Nvidia check
+          run: |
+            nvidia-smi
+        
 
       - name: Install Docker
         run: |
@@ -67,6 +89,7 @@ jobs:
             ${{ secrets.AWS_ECR_LOGIN_URI }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest \
             /bin/bash -c "
               dvc pull -r myremote && \
+              mkdir model_storage && \
               dvc repro -f
             "
 
