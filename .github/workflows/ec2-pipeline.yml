@@ -169,10 +169,18 @@ jobs:
           # # Stop the container after retrieving logs
           # docker stop $CONTAINER_ID
 
+      - name: List files in folder
+        run: |
+          ls -l ./  
+
+      - name: List files in folder
+        run: |
+          ls -l ./model_storage
+
       - name: Read best checkpoint file name
         id: read_checkpoint
         run: |
-          checkpoint_file=$(head -n 1 model_storage/best_model_checkpoint.txt)
+          checkpoint_file=$(head -n 1 ./model_storage/best_model_checkpoint.txt)
           echo "CHECKPOINT_FILE=$checkpoint_file" >> $GITHUB_ENV
 
       - name: Get latest commit ID
