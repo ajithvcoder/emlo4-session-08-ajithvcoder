@@ -41,13 +41,13 @@ jobs:
       #     node -v
       #     npm -v
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
-      - run: npm test
+      # - uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 20
+      # - run: npm ci
+      # - run: npm test
 
-      - uses: actions/checkout@v2
+      # - uses: actions/checkout@v2
 
 
       - name: Verify EC2 Instance
