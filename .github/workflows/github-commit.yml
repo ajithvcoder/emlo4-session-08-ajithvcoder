@@ -50,12 +50,12 @@ jobs:
 
       - name: Display the commit ID
         run: |
-          echo "Latest commit ID is: ${{ needs.build-and-push-ecr-image.get_commit_id.outputs.commit_id }}"
+          echo "Latest commit ID is: ${{ needs.build-and-push-ecr-image.outputs.commit_id }}"
 
       - name: Get latest commit ID
         id: get_commit_id_runner
         run: |
-          echo "::set-output name=commit_id::${{ needs.build-and-push-ecr-image.get_commit_id.outputs.commit_id }}"
+          echo "::set-output name=commit_id::${{ needs.build-and-push-ecr-image.outputs.commit_id }}"
 
 
   EC2-runner:
@@ -69,12 +69,12 @@ jobs:
 
       - name: Display the commit ID
         run: |
-          echo "Latest commit ID is: ${{ needs.launch-runner.get_commit_id_runner.outputs.commit_id }}"
+          echo "Latest commit ID is: ${{ needs.launch-runner.outputs.commit_id }}"
 
       - name: Get latest commit ID
         id: get_commit_id_ec2
         run: |
-          echo "::set-output name=commit_id::${{ needs.launch-runner.get_commit_id_runner.outputs.commit_id }}"
+          echo "::set-output name=commit_id::${{ needs.launch-runner.outputs.commit_id }}"
 
 
       # - name: Deploy runner on AWS EC2 
