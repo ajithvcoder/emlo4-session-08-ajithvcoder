@@ -252,7 +252,7 @@ jobs:
         run: |
           checkpoint_path="${{ env.CHECKPOINT_FILE }}"  # Use the checkpoint path from the file
           bucket_name="mybucket-emlo-mumbai"  # Change to your S3 bucket name
-          s3_key="session-08-checkpoint/${{ needs.launch-runner.outputs.commit_id. }}/$(basename "$checkpoint_path")"  # Define S3 key
+          s3_key="session-08-checkpoint/${{ needs.launch-runner.outputs.commit_id }}/$(basename "$checkpoint_path")"  # Define S3 key
           echo "Uploading $checkpoint_path to s3://$bucket_name/$s3_key"
           aws s3 cp "$checkpoint_path" "s3://$bucket_name/$s3_key"
 
