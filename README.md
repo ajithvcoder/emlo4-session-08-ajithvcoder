@@ -1,82 +1,43 @@
-## EMLOV4-Session-07 Assignment - Experiment Tracking & Hyperparameter Optimization
+## EMLOV4-Session-08 Assignment - AWS Crash Course - (Auto Github ECR push, CML to trigger EC2 spot, DVC Repro S3 storage using github actions)
 
-### Assignment -08 dev
-Do all these things manually first to understand the flow 
-- Connect vscode to ec2 instance - done
-- Create a ECR repo and try to push there from ec2 - done
-- try pulling the image and see - done
-- next check the image locally and do improvements in ec2 itself. - done
-- after you are sure it can run dvc repro command then push and test in ecr + github actions
-
-Do these manually
-- use s3 for storing datas - done
-- do pushing checkpoint to s3
-- then go with github actions
+**Abstract: Once github workflow is triggered it develops a docker image with github code content and pushes the image to ECR after it cml is used to trigger EC2 instance and docker image is fetched inside EC2 and used for training, evaluation, inferencing and checkpoint is stored in AWS S3 storage. Also both EC2 instance and spot request are turned off after run**
 
 ### Contents
 
-**Note: In addition to the requirements I have also done eval and infer pipeline to fetch optimized model checkpoint automatically**
-
 - [Requirements](#requirements)
 - [Development Method](#development-method)
-    - [DVC Integration with Google Drive Storage](#dvc-integration-with-google-drive-storage)
-    - [Integrate aim mlflow](#integrate-aim-mlflow)
-    - [Setting up hyperparam search config files](#setting-up-hyperparam-search-config-files)
-    - [Multirun personalization and report generation](#multirun-personalization-and-report-generation)
-    - [Github Actions Pipeline](#github-actions-pipeline)
-    - [Train-Test-Infer-Comment-CML](#train-test-infer-comment-cml)
+    - [DVC Integration with AWS S3](#dvc-integration-with-aws-s3)
+    - [Run AWS works manually for testing](#run-aws-works-manually-for-testing)
+    - [Building ECR image for development](#building-ecr-image-for-development)
+    - [Using CML to trigger EC2 spot instance](#using-cml-to-trigger-ec-spot-instance)
 - [Learnings](#learnings)
 - [Results Screenshots](#results-screenshots)
 
 ### Requirements
 
-- Your assignment is to Run Hyper Param Optimization with Github Actions
-- Your CI/CD Action will add a comment at the end with a list of all hparams, and it's test accuracy in a table format
-- Plot combined metrics for all runs (val/loss & val/acc)
-- Optimize Params for any of these models:
-    - https://github.com/huggingface/pytorch-image-models/blob/main/timm/models/mambaout.py
-    - https://github.com/huggingface/pytorch-image-models/blob/main/timm/models/convnext.py
-    - https://github.com/huggingface/pytorch-image-models/blob/main/timm/models/volo.py
-- Dataset
-    - Any! Just don't choose a really large dataset
-    - You can use DVC, like the last assignment
-- Perform at least 10 experiments, choose a smaller model so it doesn't take time.
-- Each experiment should run for at least 2 epochs
-- Before running the experiments, see if your model works with your hyper parameters options
-- Use Cursor for suggesting the hyper parms and creating the hparams.yaml file
-
+- Build the Docker Image and push to ECR
+    - You’ll be using this ECR image for training the model on AWS GPU
+    - Make sure you use GPU version of PyTorch
+- Connect DVC to use S3 remote
+- Train model on EC2 g4dn.xlarge
+- Test the model accuracy
+- Push the trained model to s3
+    - use specific folder and commit id
 
 ### Development Method
 
 #### Build Command
 
+**GPU Usage**
+
+- Pass cuda parameter to trainer so that i trains with GPU
+- You need to pass `--gpus=all` to docker run command so that it uses host GPU
+
 **Debug Commands for development**
 
-- Adjust below params in trainer/default.yaml for reduced dataset training. You can even train with 10% of dataset but if step numbers 
-are low you may face problems in mlflow, aim loggings as it depends on step number for logging.
-
-    ```
-    limit_train_batches: 0.6
-    limit_val_batches: 0.9
-    limit_test_batches: 0.9
-    ```
-
-- Adjust below params in experiment/catdog_ex.yaml. Original model 27 million params and for reduced model it takes only 7.3k params
-
-    ```
-    depths: (1, 1, 2, 1)
-    dims: (4, 8, 8, 16)
-    ```
-
-
-- I didnt figure out a way for replacing absolute path. For faster development i have used absolute paths for github actions kindly change it using vscode search and proceed with
-`/workspaces/emlo4-session-07-ajithvcoder/`
-
-    ```
-    /home/runner/work/emlo4-session-07-ajithvcoder/emlo4-session-07-ajithvcoder/ 
-    ```
-
-- Developed with `uv package` in local
+- Since GPU is used training is faster at inital stage you may commit the dataset also with docker file so that you can debug the workflow faster and run `dvc repro -f` command to verify the pipeline. Even for 70 MB it takes 3 minutes so if you use this method you can debug work for cml triggering EC2 spot instance faster. 
+- Also i noted that GPU allocated when instance triggered through CML is T4 cuda 11.4 instance. But when I trigger manually throguh AWS UI I am getting T4 cuda 12.1 instance. Only few packages had a facility to launch with ami-id.
+- Developed with `uv package` and `--system` in docker.
 
 
 **Hparam Search Train Test Infer Commands**
@@ -100,12 +61,18 @@ if you are going by `--extra-index-url` method you might need to give it every t
 
 ```dvc repro```
 
-Comment in PR or commit on which github actions is running
-```cml comment create report.md```
 
-### DVC Integration with Google Drive Storage
+### DVC Integration with AWS S3
 
-- Download gdrive file manually -> `use "uc?id=<drive-id>"` -> `gdown https://drive.google.com/uc?id=1V4awkaDGr8s1aI3VGoQUs1Ao6aF8_Os3`
+- Set environment variables in docker container and set the S3 bucket path
+
+    ```
+    export AWS_ACCESS_KEY_ID='myid'
+    export AWS_SECRET_ACCESS_KEY='mysecret'
+    dvc remote add -d myremote s3://<bucket>/<key>
+    ```
+
+**Reference**
 
 - [Github Blog](https://github.com/ajithvcoder/dvc-gdrive-workflow-setup)
 - [Medium blog](https://medium.com/@ajithkumarv/setting-up-a-workflow-with-dvc-google-drive-and-github-actions-f3775de4bf63)
@@ -125,29 +92,11 @@ Comment in PR or commit on which github actions is running
 
 - Note: You can still add more dependecies and output in dvc.yaml file to improve the quality and relaiablity
 
-### Integrate AIM MLflow
-
-- `AIM package` has a pytorch lighting integration so we can use that class in `__target__` of loggger.
- is already inegrated with pytorch lighting so we just need to add config files in "logger" folder and use proper api key for it.
-    - Use `uv run aim init` then `uv run aim up` before staring training and then run the training commands.
-
-- MLFlow is already inegrated with pytorch lighting so we just need to add config files in "logger" folder and use proper api key for it. After training has ran go into `logs/` folder which has `mlruns` and then run ```uv run mlflow ui```
-
-- Comet-ML is already inegrated with pytorch lighting so we just need to add config files in "logger" folder and use proper api key for it.
-
 
 ### Github Actions Pipeline
 
 - setup cml, uv packages using github actions and install `python=3.11.7`
-- Copy the contents of credentials.json and store in github reprository secrets with name `GDRIVE_CREDENTIALS_DATA`
-
-### Setting up hyperparam search config files
-
-- `configs/hparams/` is used to store necesary parmaeters for hyper parameter searcg.
-
-- For multi run in parallel below config can be used but the processor should be good to handle it else it will hang the system.
-
-    ```uv run python src/train.py --multirun hydra/launcher=joblib hydra.launcher.n_jobs=4 experiment=catdog_ex model.embed_dim=16,32,64```
+- Create AWS User keys and copy the contents of `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and store in github reprository secrets with variable name `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
 
 ### Multirun personalization and report generation
 
@@ -163,7 +112,7 @@ Comment in PR or commit on which github actions is running
 
 - You can use `**kwargs` and import necessary configs related to `convnext` . Also you can feed the model necessary configs to it.
 
-### Train-Test-Infer-Comment-CML
+**Train-Test-Infer**
 
 **Debugging and development**
 
@@ -184,50 +133,105 @@ Use a subset of train and test set for faster debugging and development. Also u 
 **Infer**
 - `dvc repro infer`
 
-**Create CML report**
+**Copy best checkpoint and Move to S3**
 
-- Install cml pacakge
 - `python scripts/multirun_metrics_fetch.py` will fetch the necessary files needed for report and log table and plots to report.md. Moreover it also creates a file `best_model_checkpoint.txt` which holds the **optimized configs checkpoint model**
-- cml tool is used to comment in github and it internally uses github token to authorize
+- From `best_model_checkpoint.txt` use the file name in it and move to S3 using terminal commands in github actions
 
+### Run AWS works manually for testing
 
-### CI Pipeline Development
+Do all these things manually first to understand the flow 
+- Connect vscode to ec2 instance 
+- Create a ECR repo and try to push there from ec2
+- Try pulling the image and see
+- Next check the image locally and do improvements in ec2 itself. 
+- After you are sure it can run dvc repro command then push and test in ecr + github actions
 
-- Using GitHub Actions and the `dvc-pipeline.yml`, we are running all above actions and it could be triggered both manually and on pull request given to main branch
+Do these manually
+- Use s3 for storing datas
+- Do pushing checkpoint to s3
+- Then go with github actions
+- TODO - Blogs to write
+    - integrate S3
+    - github actions to start a spot g4dnx instance
 
 
 ### Learnings
 
-- Learnt about AIM, MLFlow tool usage and multirun configurations and training.
+- Make sure in **Spot Requests** everything is turned off because with some settings ttl of 35 days + some other setting it was not turning off and restarting the ec2 instance even if i turn off manually.
+
+- Pass proper parameter to `cml runner launch` else it may not close automaicall or restart even if you turn off
+
+    ex: `cml runner launch \
+            --cloud=aws \
+            --name=session-08 \
+            --cloud-region=ap-south-1 \
+            --cloud-type=g4dn.xlarge \
+            --cloud-hdd-size=64 \
+            --cloud-spot \
+            --single \
+            --labels=cml-gpu \
+            --idle-timeout=100 `
+
+- Error caused due to "dvc is not available in /workspace" is due to -v $(pwd):/workspace/ 
+
+- Dont use model_storage:/workspace/model_storage like this, it corresponds to model_storage docker volume not as a folder
+
+### Building ECR image for development
+
+**Refer workflow/ec2-pipeline.yml**
+
+**build-and-push-ecr-image**
+
+- Checkout Code 
+- Install Jq for supporting aws related actions
+- Use `aws-actions/configure-aws-credentials@v1` for credentials configuration
+- Use `aws-actions/amazon-ecr-login@v1` for logging in
+- Get the latest commit id and store it as environment variable
+- Use `docker-build` and `docker-push` to build and push in github actions
+
+### Using CML to trigger EC2 spot instance
+
+**Refer workflow/ec2-pipeline.yml**
+- Use `iterative/setup-cml@v2` to launch cml runner
+- Using `cml runner launch` chose the type of instance you need eg: g4dn.xlarge and sub type `spot` and it will trigger it in EC2. Make sure your role permissions are clear for the ACCESS_TOKEN user you used. Else you might face a error there. A normal spot instance is triggered with 4 CPUs by default.
+
+- Verify if its a spot instance using api `http://169.254.169.254/latest/api/token`.
+- Check the GPU present there only then you can use respective image. Example when i triggered manually i was getting T4 with cuda 12.1 but in cml launcher i was getting T4 with cuda 11.4 driver. So if you use a advanced image like 12.1 on 11.4 it wont be supported. However 11.8 is supported on 11.4 cuda.
+
+- From best_checkpoint.txt file your can get the best checkpoint file name and it being transfered from model_storage folder to `mybucket-emlo-mumbai/session-08-checkpoint` in S3 by having a folder named with commit id in it.
+
 
 ### Results Screenshots
 
-**MLFlow Dashboard**
 
-![MLFLow dashboard](./assets/snap_for_mlflow.png)
+**Auto Github ECR push, CML to trigger EC2 spot, DVC Repro run**
 
-![MLFLow compare dashboard](./assets/snap_compare_mlflow.png)
+Run details - [here](https://github.com/ajithvcoder/emlo4-session-08-ajithvcoder/actions/runs/11678323057)
 
-**AIM Dashboard**
+![workflow run](./assets/snap_workflow_run.png)
 
-![AIM dashboard](./assets/snap_for_aim.png)
+**Auto turning off of EC2 instance and spot request**
 
-![AIM compare dashboard](./assets/snap_for_aim_multirun.png)
+![turn off](./assets/snap_auto_turn_off_instance.png)
+
+![spot turn off](./assets/snap_turnoff_spot_instance.png)
 
 
-**Work flow success on main branch**
+**ECR Repo**
 
-Run details - [here](https://github.com/ajithvcoder/emlo4-session-07-ajithvcoder/actions/runs/11539680917)
+![ecr](./assets/snap_image_push.png)
 
-![main workflow](./assets/snap_for_gitactions.png)
+**DVC integration with S3**
 
-**Comments from cml with hyperparam search table and plots**
+![dvc](./assets/snap_dataset_bucket.png)
 
-Details - [here](https://github.com/ajithvcoder/emlo4-session-07-ajithvcoder/commit/513718d673e8db5c8873b483c2ea7e68b11ee9d0#commitcomment-148403188)
+**Check point Storage in S3**
 
-![cml comment](./assets/snap_for_comment.png)
+![checkpoint_store](./assets/snap_commit_id_folder.png)
 
-Note: The objective is to complete the requirements of assignment with minimal resource so i have reduced dataset and model size and this makes training faster and in turn it made the accuracy to decrease.
+
+Note: The objective is to complete the requirements of assignment with minimal resource so i have reduced dataset and the optuna trail runs and model size for faster integration
 
 ### Group Members
 
