@@ -50,7 +50,7 @@ jobs:
 
       - name: Display the commit ID
         run: |
-          echo "Latest commit ID is: ${{ needs.build-and-push-ecr-image.outputs.commit_id }}"
+          echo "Latest commit ID is: ${{ needs.build-and-push-ecr-image.get_commit_id.outputs.commit_id }}"
 
       - name: Get latest commit ID
         id: get_commit_id_runner
