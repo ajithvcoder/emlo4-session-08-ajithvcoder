@@ -201,6 +201,14 @@ Do these manually
 
 - From best_checkpoint.txt file your can get the best checkpoint file name and it being transfered from model_storage folder to `mybucket-emlo-mumbai/session-08-checkpoint` in S3 by having a folder named with commit id in it.
 
+**Reference**
+
+-  [cml-example-cloud-gpu](https://github.com/iterative-test/cml-example-cloud-gpu),[cml-advanced-setup](https://github.com/iterative/cml#advanced-setup) - Was able use this and trigger ec2 start and stop tasks. Not sure how to specify AMI id to it.
+
+- [ec2-github-runner](https://github.com/machulav/ec2-github-runner) - Not able to specify spot instance 
+
+- [deploy-self-hosted-runners-to-ec2-spot-on-demand](https://github.com/marketplace/actions/deploy-self-hosted-runners-to-ec2-spot-on-demand) - keeps on polling not sure which setting should be used to stop polling
+
 
 ### Results Screenshots
 
