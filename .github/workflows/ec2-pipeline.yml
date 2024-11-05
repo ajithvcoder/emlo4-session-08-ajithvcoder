@@ -6,6 +6,8 @@ jobs:
   build-and-push-ecr-image:
     name: Build and push ECR image
     runs-on: ubuntu-latest
+    outputs:
+      commit_id: ${{ steps.get_commit_id.outputs.commit_id }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -29,12 +31,13 @@ jobs:
         id: get_commit_id
         run: |
           latest_commit=$(git rev-parse HEAD)
-          echo "COMMIT_ID=$latest_commit" >> $GITHUB_ENV
-        shell: bash
+          echo "::set-output name=commit_id::$latest_commit"
+
 
       - name: Display the commit ID
         run: |
-          echo "Latest commit ID is: ${{ env.COMMIT_ID }}"
+          echo "Latest commit ID is: ${{ steps.get_commit_id.outputs.commit_id }}"
+
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
@@ -54,9 +57,21 @@ jobs:
   launch-runner:
     runs-on: ubuntu-latest
     needs: build-and-push-ecr-image
+    outputs:
+      commit_id: ${{ steps.get_commit_id_runner.outputs.commit_id }}
     steps:
       - uses: actions/checkout@v3
       - uses: iterative/setup-cml@v2
+
+      - name: Display the commit ID
+        run: |
+          echo "Latest commit ID is: ${{ needs.build-and-push-ecr-image.outputs.commit_id }}"
+
+      - name: Get latest commit ID
+        id: get_commit_id_runner
+        run: |
+          echo "::set-output name=commit_id::${{ needs.build-and-push-ecr-image.outputs.commit_id }}"
+
       - name: Deploy runner on AWS EC2 
         env:
           REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -76,31 +91,14 @@ jobs:
   train-and-report:
     runs-on: [self-hosted, cml-gpu]
     needs: launch-runner
+    outputs:
+      commit_id: ${{ steps.get_commit_id_ec2.outputs.commit_id }}
     timeout-minutes: 20
     # container:
     #   image: docker://pytorch/pytorch:2.4.0-cuda12.4-cudnn9-runtime
     #   options: --gpus all
     # runs-on: ubuntu-latest
     steps:
-      # - name: Set node environment
-      #   run: |
-      #     apt-get remove nodejs
-      #     apt-get remove npm
-      #     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-      #     chmod +x ~/.nvm/nvm.sh
-      #     ls -a ~
-      #     nvm -v
-      #     nvm install 20
-      #     node -v
-      #     npm -v
-
-      # - uses: actions/setup-node@v4
-      #   with:
-      #     node-version: 20
-      # - run: npm ci
-      # - run: npm test
-
-      # - uses: actions/checkout@v2
 
       - name: Display CUDA Version
         run: |         
@@ -254,7 +252,7 @@ jobs:
         run: |
           checkpoint_path="${{ env.CHECKPOINT_FILE }}"  # Use the checkpoint path from the file
           bucket_name="mybucket-emlo-mumbai"  # Change to your S3 bucket name
-          s3_key="session-08-checkpoint/${{ env.COMMIT_ID }}/$(basename "$checkpoint_path")"  # Define S3 key
+          s3_key="session-08-checkpoint/${{ needs.launch-runner.outputs.commit_id. }}/$(basename "$checkpoint_path")"  # Define S3 key
           echo "Uploading $checkpoint_path to s3://$bucket_name/$s3_key"
           aws s3 cp "$checkpoint_path" "s3://$bucket_name/$s3_key"
 
