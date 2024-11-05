@@ -236,7 +236,9 @@ Run details - [here](https://github.com/ajithvcoder/emlo4-session-08-ajithvcoder
 
 **Check point Storage in S3**
 
-![checkpoint_store](./assets/snap_commit_id_folder.png)
+![checkpoint_store](./assets/snap_checkpoint_storage.png)
+
+![checkpoint](./assets/snap_checkpoint_transfer_1.png)
 
 
 Note: The objective is to complete the requirements of assignment with minimal resource so i have reduced dataset and the optuna trail runs and model size for faster integration
