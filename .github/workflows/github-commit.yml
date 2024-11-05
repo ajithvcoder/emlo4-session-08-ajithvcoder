@@ -1,4 +1,4 @@
-name: CML-EC2-Runner
+name: Github-Commit-Transfer
 on: 
   workflow_dispatch:
 jobs:
