@@ -42,9 +42,21 @@ jobs:
   launch-runner:
     runs-on: ubuntu-latest
     needs: build-and-push-ecr-image
+    outputs:
+      commit_id: ${{ steps.get_commit_id.outputs.commit_id }}
     steps:
       - uses: actions/checkout@v3
       - uses: iterative/setup-cml@v2
+
+      - name: Display the commit ID
+        run: |
+          echo "Latest commit ID is: ${{ needs.outputs.commit_id }}"
+
+      - name: Get latest commit ID
+        id: get_commit_id
+        run: |
+          latest_commit=$(git rev-parse HEAD)
+          echo "::set-output name=commit_id::${{ needs.get_commit_id.outputs.commit_id }}"
       - name: Deploy runner on AWS EC2 
         env:
           REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -135,13 +147,13 @@ jobs:
 
       - name: Display the commit ID
         run: |
-          echo "Latest commit ID is: ${{ build-and-push-ecr-image.get-commit-id.outputs.commit_id }}"
+          echo "Latest commit ID is: ${{ needs.outputs.commit_id }}"
 
       - name: Upload checkpoint to S3
         run: |
           checkpoint_path="${{ env.CHECKPOINT_FILE }}"  # Use the checkpoint path from the file
           bucket_name="mybucket-emlo-mumbai"  # Change to your S3 bucket name
-          s3_key="session-08-checkpoint/${{ build-and-push-ecr-image.get-commit-id.outputs.commit_id }}/$(basename "$checkpoint_path")"  # Define S3 key
+          s3_key="session-08-checkpoint/${{ needs.outputs.commit_id }}/$(basename "$checkpoint_path")"  # Define S3 key
           echo "Uploading $checkpoint_path to s3://$bucket_name/$s3_key"
           aws s3 cp "$checkpoint_path" "s3://$bucket_name/$s3_key"
 
