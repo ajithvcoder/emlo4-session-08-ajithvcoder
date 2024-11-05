@@ -9,7 +9,7 @@
     - [DVC Integration with AWS S3](#dvc-integration-with-aws-s3)
     - [Run AWS works manually for testing](#run-aws-works-manually-for-testing)
     - [Building ECR image for development](#building-ecr-image-for-development)
-    - [Using CML to trigger EC2 spot instance](#using-cml-to-trigger-ec-spot-instance)
+    - [Using CML to trigger EC2 spot instance](#using-cml-to-trigger-ec2-spot-instance)
 - [Learnings](#learnings)
 - [Results Screenshots](#results-screenshots)
 
