@@ -33,7 +33,8 @@ jobs:
         shell: bash
 
       - name: Display the commit ID
-        run: echo "Latest commit ID is: ${{ env.COMMIT_ID }}"
+        run: |
+          echo "Latest commit ID is: ${{ env.COMMIT_ID }}"
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
